@@ -275,11 +275,11 @@ def performMerge( mergeList, mp4Folder, mergedFolder):
   if (len(mergeList)>1):
     mergedMp4File = firstInfo.namedPrefix + firstInfo.namedStartTime + '_' + lastInfo.namedEndTime + '.mp4'
     mergeListTxtFile = path( mp4Folder, 'Dav2Mp4-mergelist.txt')
-    debug('DB: mergeListTxtFile=',mergeListTxtFile,'\n')
+    debug('DB: mergeListTxtFile='+str(mergeListTxtFile)+'\n')
     with open( mergeListTxtFile,'w') as f:
       for file in mergeList:
         f.write('file \''+path( mp4Folder, file)+'\'\n')
-        debug('DB:MergeListTxtFile   ',path( mp4Folder, file),'\n')
+        debug('DB:MergeListTxtFile   '+path( mp4Folder, file)+'\n')
     # DB
     #mergeListTxtFileDB = path( folder, 'Dav2Mp4-mergelist-debug.txt')
     #shutil.copy(mergeListTxtFile, mergeListTxtFileDB)
@@ -304,12 +304,10 @@ def performMerge( mergeList, mp4Folder, mergedFolder):
   log('building timestamp subtitle file '+subtitleFile)
   srtID=1
   srtTime=0.0
-  debug('DB mergelist=', mergeList, '\n')
   with open( path( mergedFolder, subtitleFile), 'w') as f2:
     for file in mergeList:
       videoFileInfo = getVideoFileInfo( file, mp4Folder)
       # displayStartTime = videoFileInfo.namedStartTimeObj (datetime.datetime)
-      debug('DB file='+file+' videoDuration=',videoFileInfo.videoDuration,' namedDuration=',videoFileInfo.namedDuration,'\n')
       for fileTime in range(0, int(videoFileInfo.videoDuration+1.0)):
         if ((fileTime+0.999)<=videoFileInfo.videoDuration):
           # count in 1 second intervals
