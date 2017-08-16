@@ -1,0 +1,36 @@
+Dav2Mp4 notes
+
+pyinstaller:
+Alter dav2mp4.spec to include ffmpeg binaries in package:
+    a = Analysis(['dav2mp4.py'],
+               binaries=[ ('ffmpeg.exe', '.'), ('ffprobe.exe', '.')],
+               
+               
+Notes on conversion using ffmpeg
+
+Options to experiment with:
+ffmpeg -i IN.DAV -vcodec copy OUT.AVI
+ffmpeg -i IN.DAV -sws_flags lanczos+accurate_rnd -c:v libx264 -crf 20 -preset veryslow -profile:v main OUT.MP4 -y
+ffmpeg -i IN.DAV -sws_flags lanczos+accurate_rnd -c:v libx264 -crf 20 -preset veryslow -profile:v main -tune fastdecode OUT.MP4 -y
+ffmpeg -i IN.DAV -sws_flags lanczos+accurate_rnd -c:v libx264 -crf 20 -profile:v baseline -level 3.0 -pix_fmt yuv420p OUT.MP4 -y
+ffmpeg -fflags genpts -i yourfile.d -c:v copy -vsync drop -r 30 -f avi yourfile.avi
+
+Subtitles
+   filename.srt line1: seqid, line2: starttime --> endtime, line3-n: text, blank-line
+   time= hh:mm:ss,ms eg 00:20:41,150
+   soft subtitles put in .srt file, show subtitles in viewer. hard: ffmpeg -vf subtitles=file.srt
+
+Merging video files:
+  video merging (same codec) concat "demuxer" will merge without reencoding
+      ffmpeg -f concat -safe 0 -i filelist.txt -c copy output.mp4 (stream copy no reencoding) (filelist.txt=file file1.mp4\nfile file2.mp4\nfile file3.mp4)
+      
+Querying video file duration:
+   ffprobe -v quiet -print_format compact=print_section=0:nokey=1:escape=csv -show_entries format=duration "$input_file" (in seconds) or -sexagesimal (in 00:20:00,200 format)
+   pipe=sp.Popen(['ffprobe'], stdout=sp.PIPE, stderr=sp.STDOUT)
+   duration, err = pipe.communicate()
+
+Online discussions:
+https://spreadys.wordpress.com/2014/06/03/i-and-d-files-mcdplayer-and-a-load-of-other-stuff/
+https://dmeresources.com/index.php/professional-community/news-blogs/940-a-word-of-caution-about-proprietary-video-formats-ffmpeg-libav
+http://blog.ampedsoftware.com/2014/05/28/more-about-proprietary-video-formats/#more-819
+http://www.bahamassecurity.com/
